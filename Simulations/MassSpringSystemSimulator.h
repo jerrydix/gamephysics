@@ -21,7 +21,7 @@ public:
 	void drawFrame(ID3D11DeviceContext* pd3dImmediateContext);
 	void notifyCaseChanged(int testCase);
 	void externalForcesCalculations(float timeElapsed);
-	void simulateTimestep(float timeStep);
+	void simulateTimestep(float timeStep); 
 	void onClick(int x, int y);
 	void onMouse(int x, int y);
 
@@ -42,6 +42,24 @@ public:
 		m_iIntegrator = integrator;
 	}
 
+	//Points and Springs
+
+	struct MassPoint {
+		Vec3 position;
+		Vec3 velocity;
+		bool isFixed;
+	};
+
+	struct Spring {
+		int masspoint1;
+		int masspoint2;
+		float initialLength;
+	};
+
+	vector<MassPoint> m_vPoints;
+	vector<Spring> m_vSprings;
+
+
 private:
 	// Data Attributes
 	float m_fMass;
@@ -54,5 +72,8 @@ private:
 	Point2D m_mouse;
 	Point2D m_trackmouse;
 	Point2D m_oldtrackmouse;
+
+	
+
 };
 #endif
