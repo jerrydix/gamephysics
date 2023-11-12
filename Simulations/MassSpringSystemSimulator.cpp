@@ -30,18 +30,19 @@ void MassSpringSystemSimulator::reset()
 	m_oldtrackmouse.x = m_oldtrackmouse.y = 0;
 }
 
-void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext* pd3dImmediateContext)
-{
+void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext* pd3dImmediateContext) {
+	// Draw the mass points
+	for (int i = 0; i < m_vPoints.size(); i++)
+	{
+		DUC->setUpLighting(Vec3(), 0.4 * Vec3(1, 1, 1), 100, Vec3(0, 0, 0));
+		DUC->drawSphere(m_vPoints[i].position, Vec3(0.1, 0.1, 0.1));
+	}
+
+	// Draw the springs
 	for (int i = 0; i < m_vSprings.size(); i++)
 	{
 		DUC->beginLine();
-		DUC->drawLine(m_vPoints[m_vSprings.at(i).masspoint1].position, Vec3(1, 0, 0), m_vPoints[m_vSprings.at(i).masspoint2].position, Vec3(1, 0, 0));
-		DUC->endLine();
-	}
-	for (int i = 0; i < m_vPoints.size(); i++)
-	{
-		DUC->beginLine();
-		DUC->drawLine(m_vPoints[i].position, Vec3(0, 1, 0), m_vPoints[i].position + m_vPoints[i].velocity, Vec3(0, 1, 0));
+		DUC->drawLine(m_vPoints[m_vSprings[i].masspoint1].position, Vec3(1, 1, 1), m_vPoints[m_vSprings[i].masspoint2].position, Vec3(1, 1, 1));
 		DUC->endLine();
 	}
 }
@@ -53,18 +54,12 @@ void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
 
 void MassSpringSystemSimulator::externalForcesCalculations(float timeElapsed)
 {
-	/*for (int i = 0; i < m_vPoints.size(); i++)
-	{
-		if (!m_vPoints[i].isFixed)
-		{
-			m_vPoints[i].force = m_externalForce;
-		}
-	}*/
+
 }
 
 void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 {
-	/*switch (m_iIntegrator)
+	switch (m_iIntegrator)
 	{
 	case EULER:
 	{
@@ -104,7 +99,7 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 		}
 		break;
 	}
-	}*/
+	}
 }
 
 void MassSpringSystemSimulator::onClick(int x, int y)
