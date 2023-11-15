@@ -59,6 +59,11 @@ public:
 	vector<MassPoint> m_vPoints;
 	vector<Spring> m_vSprings;
 
+	int g_method;
+
+	void performEuler(float timeStep);
+	void performMidpoint(float timeStep);
+
 
 private:
 	// Data Attributes
