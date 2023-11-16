@@ -9,6 +9,7 @@ MassSpringSystemSimulator::MassSpringSystemSimulator()
 
 	g_method = 0;
 	m_externalForce = Vec3(0, -9.81, 0);
+	m_mouseMovement = false;
 }
 
 const char* MassSpringSystemSimulator::getTestCasesStr()
@@ -36,31 +37,103 @@ void MassSpringSystemSimulator::reset()
 	switch (m_iTestCase)
 	{
 	case 0:
-		cout << "One step!\n";
+		m_vPoints.clear();
+		m_vSprings.clear();
 		addMassPoint(Vec3(0, 0, 0), Vec3(-1, 0, 0), false);
 		addMassPoint(Vec3(0, 2, 0), Vec3(1, 0, 0), false);
 		addSpring(0, 1, 2);
 		break;
 	case 1:
-		cout << "Euler!\n";
+		m_vPoints.clear();
+		m_vSprings.clear();
 		addMassPoint(Vec3(0, 0, 0), Vec3(-1, 0, 0), false);
 		addMassPoint(Vec3(0, 2, 0), Vec3(1, 0, 0), false);
 		addSpring(0, 1, 2);
 		break;
 	case 2:
-		cout << "Midpoint!\n";
+		m_vPoints.clear();
+		m_vSprings.clear();
 		addMassPoint(Vec3(0, 0, 0), Vec3(-1, 0, 0), false);
 		addMassPoint(Vec3(0, 2, 0), Vec3(1, 0, 0), false);
 		addSpring(0, 1, 2);
 		break;
 	default:
-		cout << "Complex!\n";
-		for (size_t i = 0; i < 10; i++)
-		{
-			addMassPoint(Vec3(0 + i, 0, 0), Vec3(-1 + i, 0, 0), false);
-			addMassPoint(Vec3(0, 2 + i, 0), Vec3(1 + i, 0, 0), false);
-			addSpring(i, i + 1, 2);
-		}
+		m_vPoints.clear();
+		m_vSprings.clear();
+
+		//weird attached kraken object
+		//0-7
+
+		addMassPoint(Vec3(0, 0, 0), Vec3(-1, 0, 0), false);
+		addMassPoint(Vec3(0.25, 0, 1), Vec3(1, 0, 0), false);
+		addMassPoint(Vec3(0, 0.25, 0), Vec3(-1, 0, 0), false);
+		addMassPoint(Vec3(0.25, 0.25, 1), Vec3(1, 0, 0), false);
+		addMassPoint(Vec3(0, 0.5, 0), Vec3(-1, 0, 0), false);
+		addMassPoint(Vec3(0.25, 0.5, 1), Vec3(1, 0, 0), false);
+		addMassPoint(Vec3(0, 0.75, 0), Vec3(-1, 0, 0), false);
+		addMassPoint(Vec3(0.15, 2, 1), Vec3(0, 0, 0), true);
+
+		addSpring(0, 1, 0.5);
+		addSpring(0, 3, 0.5);
+		addSpring(2, 3, 0.5);
+		addSpring(0, 2, 0.5);
+		addSpring(1, 3, 0.5);
+		addSpring(1, 5, 0.5);
+		addSpring(3, 5, 0.5);
+		addSpring(2, 4, 0.5);
+		addSpring(3, 4, 0.5);
+		addSpring(5, 6, 0.5);
+		addSpring(4, 6, 0.5);
+		addSpring(5, 7, 0.5);
+		addSpring(6, 7, 0.5);
+
+
+		//cube //0.866 diagonal
+		addMassPoint(Vec3(3, -0.9, 0), Vec3(0, 0, 0), false); //8
+		addMassPoint(Vec3(3.5, -0.9, 0), Vec3(0, 0, 0), false); //9
+
+		addMassPoint(Vec3(3, -0.9, 0.5), Vec3(0, 0, 0), false); //10
+		addMassPoint(Vec3(3.5, -0.9, 0.5), Vec3(0, 0, 0), false); //11
+
+		addMassPoint(Vec3(3, -0.4, 0), Vec3(0, 0, 0), false); //12
+		addMassPoint(Vec3(3.5, -0.4, 0), Vec3(0, 0, 0), false); //13
+
+		addMassPoint(Vec3(3, -0.4, 0.5), Vec3(0, 0, 0), false); //14
+		addMassPoint(Vec3(3.5, -0.4, 0.5), Vec3(0, 0, 0), false); //15
+
+		addSpring(8, 9, 0.5);
+		addSpring(8, 10, 0.5);
+		addSpring(8, 12, 0.5);
+		addSpring(9, 11, 0.5);
+		addSpring(9, 13, 0.5);
+		addSpring(10, 14, 0.5);
+		addSpring(10, 11, 0.5);
+		addSpring(11, 15, 0.5);
+		addSpring(12, 13, 0.5);
+		addSpring(12, 14, 0.5);
+		addSpring(13, 15, 0.5);
+		addSpring(14, 15, 0.5);
+
+		addSpring(8, 13, 0.3);
+		addSpring(9, 12, 0.3);
+		addSpring(9, 15, 0.3);
+		addSpring(13, 11, 0.3);
+		addSpring(13, 11, 0.3);
+		addSpring(10, 12, 0.3);
+		addSpring(8, 14, 0.3);
+		addSpring(11, 14, 0.3);
+		addSpring(10, 15, 0.3);
+		addSpring(13, 14, 0.3);
+		addSpring(12, 15, 0.3);
+		addSpring(9, 10, 0.3);
+		addSpring(8, 12, 0.3);
+
+
+		addSpring(8, 15, 0.4);
+		addSpring(9, 14, 0.4);
+		addSpring(10, 13, 0.4);
+		addSpring(11, 12, 0.4);
+
 		break;
 	}
 }
@@ -85,6 +158,7 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext* pd3dImmediateCont
 void MassSpringSystemSimulator::notifyCaseChanged(int testCase)
 {
 	m_iTestCase = testCase;
+	m_trackmouse.x = m_trackmouse.y = 0;
 	switch (m_iTestCase)
 	{
 	case 0:
@@ -217,7 +291,6 @@ void MassSpringSystemSimulator::performEuler(float timeStep) {
 
 			point1.velocity += timeStep * acceleration;
 			point1.position += timeStep * point1.velocity;
-			cout << point1.position << endl;
 		}
 
 		if (!point2.isFixed) {
@@ -332,7 +405,6 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 
 				point1.velocity += 0.1 * acceleration;
 				point1.position += 0.1 * point1.velocity;
-				cout << point1.position << endl;
 			}
 
 			if (!point2.isFixed) {
@@ -360,6 +432,11 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 	case 3: {
 		for (size_t i = 0; i < m_vPoints.size(); i++)
 		{
+			if (!m_vPoints.at(i).isFixed) {
+				m_vPoints.at(i).position.x += (m_trackmouse.x - m_oldtrackmouse.x) * 0.00001;
+				m_vPoints.at(i).position.y -= (m_trackmouse.y - m_oldtrackmouse.y) * 0.00001;
+			}
+
 			if (m_externalForce.y != 0) {
 				m_vPoints.at(i).velocity += timeStep * m_externalForce;
 			}
@@ -383,14 +460,21 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 
 void MassSpringSystemSimulator::onClick(int x, int y)
 {
+	/*if (m_mouseMovement) {
+		m_mouseMovement = false;
+	}
+	else {
+		m_mouseMovement = true;
+	}*/
+	//cout << m_mouseMovement << endl;
 	m_trackmouse.x = x;
 	m_trackmouse.y = y;
 }
 
 void MassSpringSystemSimulator::onMouse(int x, int y)
 {
-	m_oldtrackmouse.x = x;
-	m_oldtrackmouse.y = y;
+	m_oldtrackmouse.x = m_trackmouse.x;
+	m_oldtrackmouse.y = m_trackmouse.y;
 	m_trackmouse.x = x;
 	m_trackmouse.y = y;
 }
