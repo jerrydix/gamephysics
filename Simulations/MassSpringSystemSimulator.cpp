@@ -142,7 +142,9 @@ void MassSpringSystemSimulator::drawFrame(ID3D11DeviceContext* pd3dImmediateCont
 	// Draw the mass points
 	for (int i = 0; i < m_vPoints.size(); i++)
 	{
-		DUC->setUpLighting(Vec3(), 0.4 * Vec3(1, 1, 1), 100, Vec3(0, 0, 0));
+		std::mt19937 eng;
+		std::uniform_real_distribution<float> randCol(0.0f, 1.0f);
+		DUC->setUpLighting(Vec3(), 0.1 * Vec3(1, 1, 1), 100, 0.6 * Vec3(0.43,0.12,0.65));
 		DUC->drawSphere(m_vPoints.at(i).position, Vec3(0.05, 0.05, 0.05));
 	}
 
@@ -281,6 +283,8 @@ void MassSpringSystemSimulator::performEuler(float timeStep) {
 		//point 2
 		MassPoint& point2 = m_vPoints.at(m_vSprings.at(i).masspoint2);
 
+		Vec3 oldPoint1Pos = point1.position;
+
 		if (!point1.isFixed) {
 
 			Vec3 D = point1.position - point2.position;
@@ -289,21 +293,30 @@ void MassSpringSystemSimulator::performEuler(float timeStep) {
 			Vec3 p1_force = -m_fStiffness * (DLength - m_vSprings.at(i).initialLength) * normalizedD;
 			Vec3 acceleration = p1_force / m_fMass;
 
-			point1.velocity += timeStep * acceleration;
 			point1.position += timeStep * point1.velocity;
+
+			point1.velocity += timeStep * acceleration;
+			//point1.position += timeStep * point1.velocity;
 		}
 
 		if (!point2.isFixed) {
 
-			Vec3 D = point2.position - point1.position;
+			Vec3 D = point2.position - oldPoint1Pos;
 			float DLength = sqrt(D.x * D.x + D.y * D.y + D.z * D.z);
 			Vec3 normalizedD = D / DLength;
 			Vec3 p2_force = -m_fStiffness * (DLength - m_vSprings.at(i).initialLength) * normalizedD;
 			Vec3 acceleration = p2_force / m_fMass;
 
-			point2.velocity += timeStep * acceleration;
 			point2.position += timeStep * point2.velocity;
+
+			point2.velocity += timeStep * acceleration;
+			//point2.position += timeStep * point2.velocity;
 		}
+
+		cout << "Point 1 pos: " << point1.position << endl;
+		cout << "Point 1 vel: " << point1.velocity << endl;
+		cout << "Point 2 pos: " << point2.position << endl;
+		cout << "Point 2 vel: " << point2.velocity << endl;
 	}
 }
 
@@ -315,6 +328,8 @@ void MassSpringSystemSimulator::performMidpoint(float timeStep) {
 
 		//point 2
 		MassPoint& point2 = m_vPoints.at(m_vSprings.at(i).masspoint2);
+
+		Vec3 oldPoint1Pos = point1.position;
 
 
 		if (!point1.isFixed) {
@@ -348,11 +363,11 @@ void MassSpringSystemSimulator::performMidpoint(float timeStep) {
 
 		if (!point2.isFixed) {
 
-			Vec3 midStepPos1 = point1.position + 1 / 2 * timeStep * point1.velocity;
+			Vec3 midStepPos1 = oldPoint1Pos + 1 / 2 * timeStep * point1.velocity;
 			Vec3 midStepPos2 = point2.position + 1 / 2 * timeStep * point2.velocity;
 
 			//acceleration at oldPos
-			Vec3 D = point2.position - point1.position;
+			Vec3 D = point2.position - oldPoint1Pos;
 			float DLength = sqrt(D.x * D.x + D.y * D.y + D.z * D.z);
 			Vec3 normalizedD = D / DLength;
 			Vec3 p_force = -m_fStiffness * (DLength - m_vSprings.at(i).initialLength) * normalizedD;
@@ -396,6 +411,8 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 			point2.position = Vec3(0, 2, 0);
 			point2.velocity = Vec3(1, 0, 0);
 
+			Vec3 oldPoint1Pos = point1.position;
+
 			if (!point1.isFixed) {
 				Vec3 D = point1.position - point2.position;
 				float DLength = sqrt(D.x * D.x + D.y * D.y + D.z * D.z);
@@ -408,7 +425,7 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 			}
 
 			if (!point2.isFixed) {
-				Vec3 D = point2.position - point1.position;
+				Vec3 D = point2.position - oldPoint1Pos;
 				float DLength = sqrt(D.x * D.x + D.y * D.y + D.z * D.z);
 				Vec3 normalizedD = D / DLength;
 				Vec3 p2_force = -m_fStiffness * (DLength - m_vSprings.at(i).initialLength) * normalizedD;
@@ -432,15 +449,20 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 	case 3: {
 		for (size_t i = 0; i < m_vPoints.size(); i++)
 		{
+			//mouse influence
 			if (!m_vPoints.at(i).isFixed) {
 				m_vPoints.at(i).position.x += (m_trackmouse.x - m_oldtrackmouse.x) * 0.00001;
 				m_vPoints.at(i).position.y -= (m_trackmouse.y - m_oldtrackmouse.y) * 0.00001;
 			}
 
+			//gravity
 			if (m_externalForce.y != 0) {
 				m_vPoints.at(i).velocity += timeStep * m_externalForce;
 			}
+
+			//collision detection with floor (-0.95 because of sphere radius)
 			if (m_vPoints.at(i).position.y <= -0.95) {
+				m_vPoints.at(i).position.y = -0.95;
 				m_vPoints.at(i).velocity = m_vPoints.at(i).velocity - 2 * (dot(m_vPoints.at(i).velocity, Vec3(0, 1, 0))) * Vec3(0, 1, 0);
 			}
 		}
@@ -460,13 +482,6 @@ void MassSpringSystemSimulator::simulateTimestep(float timeStep)
 
 void MassSpringSystemSimulator::onClick(int x, int y)
 {
-	/*if (m_mouseMovement) {
-		m_mouseMovement = false;
-	}
-	else {
-		m_mouseMovement = true;
-	}*/
-	//cout << m_mouseMovement << endl;
 	m_trackmouse.x = x;
 	m_trackmouse.y = y;
 }
