@@ -21,15 +21,15 @@ using namespace GamePhysics;
 //#define ADAPTIVESTEP
 
 //#define TEMPLATE_DEMO
-#define MASS_SPRING_SYSTEM
+#define OPEN_PROJECT_SYSTEM
 //#define RIGID_BODY_SYSTEM
 //#define SPH_SYSTEM
 
 #ifdef TEMPLATE_DEMO
 #include "TemplateSimulator.h"
 #endif
-#ifdef MASS_SPRING_SYSTEM
-#include "MassSpringSystemSimulator.h"
+#ifdef OPEN_PROJECT_SYSTEM
+#include "OpenProjectSimulator.h"
 #endif
 #ifdef RIGID_BODY_SYSTEM
 //#include "RigidBodySystemSimulator.h"

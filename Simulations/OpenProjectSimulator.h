@@ -1,5 +1,5 @@
-#ifndef MASSSPRINGSYSTEMSIMULATOR_h
-#define MASSSPRINGSYSTEMSIMULATOR_h
+#ifndef OPENPROJECTSIMULATOR_h
+#define OPENPROJECTSIMULATOR_h
 #include "Simulator.h"
 
 // Do Not Change
@@ -9,10 +9,10 @@
 // Do Not Change
 
 
-class MassSpringSystemSimulator:public Simulator{
+class OpenProjectSimulator:public Simulator{
 public:
 	// Construtors
-	MassSpringSystemSimulator();
+	OpenProjectSimulator();
 	
 	// UI Functions
 	const char * getTestCasesStr();
