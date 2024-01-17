@@ -12,6 +12,7 @@
 #include <DirectXMath.h>
 #include "util/vectorbase.h"
 // Internal includes
+#include "OpenProjectSimulator.h"
 #include "util/util.h"
 #include "util/FFmpeg.h"
 
@@ -20,23 +21,10 @@ using namespace GamePhysics;
 
 //#define ADAPTIVESTEP
 
-//#define TEMPLATE_DEMO
-#define MASS_SPRING_SYSTEM
-//#define RIGID_BODY_SYSTEM
-//#define SPH_SYSTEM
+#define OPENPROJECTSIMULATOR_h
 
-#ifdef TEMPLATE_DEMO
-#include "TemplateSimulator.h"
-#endif
-#ifdef MASS_SPRING_SYSTEM
-#include "MassSpringSystemSimulator.h"
-#endif
-#ifdef RIGID_BODY_SYSTEM
-//#include "RigidBodySystemSimulator.h"
-#endif
-#ifdef SPH_SYSTEM
-//#include "SPHSystemSimulator.h"
-#endif
+#include "OpenProjectSimulator.h"
+
 
 DrawingUtilitiesClass * g_pDUC;
 Simulator * g_pSimulator;
@@ -358,18 +346,8 @@ int main(int argc, char* argv[])
 	g_pDUC-> g_camera.SetButtonMasks(MOUSE_MIDDLE_BUTTON, MOUSE_WHEEL, MOUSE_RIGHT_BUTTON);
 
 
-#ifdef TEMPLATE_DEMO
-	g_pSimulator= new TemplateSimulator();
-#endif
-#ifdef MASS_SPRING_SYSTEM
-	g_pSimulator= new MassSpringSystemSimulator();
-#endif
-#ifdef RIGID_BODY_SYSTEM
-	//g_pSimulator= new RigidBodySystemSimulator();
-#endif
-#ifdef SPH_SYSTEM
-	//g_pSimulator= new SPHSystemSimulator();
-#endif
+	g_pSimulator= new OpenProjectSimulator();
+
 	g_pSimulator->reset();
 
     // Init DXUT and create device
